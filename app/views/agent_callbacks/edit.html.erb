@@ -221,10 +221,13 @@
               <% end %>
               <%= form.select :status, 
                   options_for_select([
+                    ['No Answer', 'no_answer'],
                     ['Pending', 'pending'],
-                    ['In Progress', 'in_progress'],
-                    ['Completed', 'completed'],
-                    ['Cancelled', 'cancelled']
+                    ['Sale', 'sale'],
+                    ['Not Interested', 'not_interested'],
+                    ['Follow-up Later', 'follow_up_later'],
+                    ['Payment Link Sent', 'payment_link_sent'],
+                    ['Already Purchased', 'already_purchased']
                   ], @agent_callback.status),
                   { prompt: 'Select current status' },
                   { class: "mt-1 block w-full border-yellow-200 rounded-lg shadow-sm focus:ring-yellow-500 focus:border-yellow-500 transition-colors duration-200" } %>

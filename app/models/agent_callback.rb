@@ -2,7 +2,18 @@ class AgentCallback < ApplicationRecord
   belongs_to :user, foreign_key: 'agent_name', primary_key: 'email', optional: true
   has_many :agent_callback_activities, dependent: :destroy
 
-  validates :status, presence: true
+  # Updated status options for better sales tracking
+  STATUS_OPTIONS = [
+    'no_answer',
+    'pending', 
+    'sale',
+    'not_interested',
+    'follow_up_later',
+    'payment_link_sent',
+    'already_purchased'
+  ].freeze
+
+  validates :status, presence: true, inclusion: { in: STATUS_OPTIONS }
   validates :customer_name, presence: true
   validates :callback_number, presence: true
 

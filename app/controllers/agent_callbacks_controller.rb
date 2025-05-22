@@ -19,8 +19,12 @@ class AgentCallbacksController < ApplicationController
                                       .first(5),
       conversion_metrics: {
         total_created: AgentCallback.where(created_at: 30.days.ago..Time.current).count,
-        completed: AgentCallback.where(status: 'completed', created_at: 30.days.ago..Time.current).count,
-        in_progress: AgentCallback.where(status: 'in_progress').count,
+        sales: AgentCallback.where(status: 'sale').count,
+        pending: AgentCallback.where(status: 'pending').count,
+        no_answer: AgentCallback.where(status: 'no_answer').count,
+        not_interested: AgentCallback.where(status: ['not_interested', 'already_purchased']).count,
+        follow_up_later: AgentCallback.where(status: 'follow_up_later').count,
+        payment_link_sent: AgentCallback.where(status: 'payment_link_sent').count,
         avg_views_per_callback: AgentCallbackActivity.where(activity_type: 'viewed')
                                                    .group(:agent_callback_id)
                                                    .count
@@ -30,7 +34,7 @@ class AgentCallbacksController < ApplicationController
     }
     
     @analytics[:conversion_metrics][:conversion_rate] = 
-      (@analytics[:conversion_metrics][:completed].to_f / 
+      (@analytics[:conversion_metrics][:sales].to_f / 
        [@analytics[:conversion_metrics][:total_created], 1].max * 100).round(1)
   end
 

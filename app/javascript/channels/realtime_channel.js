@@ -172,7 +172,7 @@ consumer.subscriptions.create("RealtimeChannel", {
         <td class="px-6 py-4">
           <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold ${statusClass}">
             <span class="w-1.5 h-1.5 rounded-full mr-2 ${this.getStatusDotClass(callback.status)}"></span>
-            ${callback.status ? callback.status.charAt(0).toUpperCase() + callback.status.slice(1).replace('_', ' ') : 'Pending'}
+            ${callback.status ? callback.status.charAt(0).toUpperCase() + callback.status.slice(1).replace(/_/g, ' ') : 'Pending'}
           </span>
         </td>
 
@@ -222,30 +222,42 @@ consumer.subscriptions.create("RealtimeChannel", {
   getStatusClass(status) {
     switch(status) {
       case 'pending':
-        return 'bg-yellow-100 text-yellow-800'
-      case 'completed':
-        return 'bg-green-100 text-green-800'
-      case 'in_progress':
-        return 'bg-blue-100 text-blue-800'
-      case 'cancelled':
-        return 'bg-red-100 text-red-800'
+        return 'bg-yellow-100 text-yellow-800 border border-yellow-200'
+      case 'sale':
+        return 'bg-green-100 text-green-800 border border-green-200'
+      case 'no_answer':
+        return 'bg-gray-100 text-gray-800 border border-gray-200'
+      case 'not_interested':
+        return 'bg-red-100 text-red-800 border border-red-200'
+      case 'follow_up_later':
+        return 'bg-blue-100 text-blue-800 border border-blue-200'
+      case 'payment_link_sent':
+        return 'bg-purple-100 text-purple-800 border border-purple-200'
+      case 'already_purchased':
+        return 'bg-indigo-100 text-indigo-800 border border-indigo-200'
       default:
-        return 'bg-gray-100 text-gray-800'
+        return 'bg-gray-100 text-gray-800 border border-gray-200'
     }
   },
 
   getStatusDotClass(status) {
     switch(status) {
       case 'pending':
-        return 'bg-yellow-500'
-      case 'completed':
-        return 'bg-green-500'
-      case 'in_progress':
-        return 'bg-blue-500'
-      case 'cancelled':
-        return 'bg-red-500'
+        return 'bg-yellow-400'
+      case 'sale':
+        return 'bg-green-400'
+      case 'no_answer':
+        return 'bg-gray-400'
+      case 'not_interested':
+        return 'bg-red-400'
+      case 'follow_up_later':
+        return 'bg-blue-400'
+      case 'payment_link_sent':
+        return 'bg-purple-400'
+      case 'already_purchased':
+        return 'bg-indigo-400'
       default:
-        return 'bg-gray-500'
+        return 'bg-gray-400'
     }
   },
 
