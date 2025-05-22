@@ -1,0 +1,27 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  status: MyString
+  product: MyString
+  car_make_model: MyString
+  year: 1
+  zip: MyString
+  customer_name: MyString
+  callback_number: MyString
+  follow_up_date: 2025-05-22
+  agent_name: MyString
+  comments: MyText
+  last_modified_by: MyString
+
+two:
+  status: MyString
+  product: MyString
+  car_make_model: MyString
+  year: 1
+  zip: MyString
+  customer_name: MyString
+  callback_number: MyString
+  follow_up_date: 2025-05-22
+  agent_name: MyString
+  comments: MyText
+  last_modified_by: MyString

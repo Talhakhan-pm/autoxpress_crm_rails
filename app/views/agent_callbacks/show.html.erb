@@ -1,0 +1,161 @@
+<div class="min-h-screen bg-gray-50">
+  <!-- Header -->
+  <div class="bg-white shadow">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center py-6">
+        <div>
+          <h1 class="text-3xl font-bold text-gray-900">Callback Details</h1>
+          <p class="mt-1 text-sm text-gray-600">View callback for <%= @agent_callback.customer_name %></p>
+        </div>
+        <div class="flex space-x-3">
+          <%= link_to edit_agent_callback_path(@agent_callback), class: "bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium" do %>
+            Edit Callback
+          <% end %>
+          <%= link_to agent_callbacks_path, class: "bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-md text-sm font-medium" do %>
+            Back to Callbacks
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="bg-white shadow rounded-lg overflow-hidden">
+      <!-- Status Badge -->
+      <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
+        <div class="flex items-center justify-between">
+          <h2 class="text-lg font-medium text-gray-900">Callback Information</h2>
+          <span class="inline-flex px-3 py-1 text-sm font-semibold rounded-full 
+            <%= case @agent_callback.status
+                when 'pending' then 'bg-yellow-100 text-yellow-800'
+                when 'completed' then 'bg-green-100 text-green-800'
+                when 'in_progress' then 'bg-blue-100 text-blue-800'
+                when 'cancelled' then 'bg-red-100 text-red-800'
+                else 'bg-gray-100 text-gray-800'
+                end %>">
+            <%= @agent_callback.status&.humanize %>
+          </span>
+        </div>
+      </div>
+      
+      <div class="p-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <!-- Customer Information -->
+          <div>
+            <h3 class="text-lg font-medium text-gray-900 mb-4">Customer Information</h3>
+            <dl class="space-y-3">
+              <div>
+                <dt class="text-sm font-medium text-gray-500">Customer Name</dt>
+                <dd class="text-sm text-gray-900"><%= @agent_callback.customer_name %></dd>
+              </div>
+              <div>
+                <dt class="text-sm font-medium text-gray-500">Phone Number</dt>
+                <dd class="text-sm text-gray-900">
+                  <a href="tel:<%= @agent_callback.callback_number %>" class="text-blue-600 hover:text-blue-800">
+                    <%= @agent_callback.callback_number %>
+                  </a>
+                </dd>
+              </div>
+              <div>
+                <dt class="text-sm font-medium text-gray-500">ZIP Code</dt>
+                <dd class="text-sm text-gray-900"><%= @agent_callback.zip || "Not provided" %></dd>
+              </div>
+            </dl>
+          </div>
+
+          <!-- Product & Vehicle Information -->
+          <div>
+            <h3 class="text-lg font-medium text-gray-900 mb-4">Product & Vehicle</h3>
+            <dl class="space-y-3">
+              <div>
+                <dt class="text-sm font-medium text-gray-500">Product</dt>
+                <dd class="text-sm text-gray-900"><%= @agent_callback.product || "Not specified" %></dd>
+              </div>
+              <div>
+                <dt class="text-sm font-medium text-gray-500">Car Make & Model</dt>
+                <dd class="text-sm text-gray-900"><%= @agent_callback.car_make_model || "Not specified" %></dd>
+              </div>
+              <div>
+                <dt class="text-sm font-medium text-gray-500">Year</dt>
+                <dd class="text-sm text-gray-900"><%= @agent_callback.year || "Not specified" %></dd>
+              </div>
+            </dl>
+          </div>
+        </div>
+
+        <!-- Follow-up and Agent Information -->
+        <div class="mt-8 pt-8 border-t border-gray-200">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div>
+              <h3 class="text-lg font-medium text-gray-900 mb-4">Follow-up Information</h3>
+              <dl class="space-y-3">
+                <div>
+                  <dt class="text-sm font-medium text-gray-500">Follow-up Date</dt>
+                  <dd class="text-sm text-gray-900">
+                    <%= @agent_callback.follow_up_date&.strftime("%B %d, %Y") || "Not scheduled" %>
+                  </dd>
+                </div>
+                <div>
+                  <dt class="text-sm font-medium text-gray-500">Agent</dt>
+                  <dd class="text-sm text-gray-900"><%= @agent_callback.agent_name %></dd>
+                </div>
+              </dl>
+            </div>
+
+            <div>
+              <h3 class="text-lg font-medium text-gray-900 mb-4">Tracking Information</h3>
+              <dl class="space-y-3">
+                <div>
+                  <dt class="text-sm font-medium text-gray-500">Created</dt>
+                  <dd class="text-sm text-gray-900"><%= @agent_callback.created_at.strftime("%B %d, %Y at %I:%M %p") %></dd>
+                </div>
+                <div>
+                  <dt class="text-sm font-medium text-gray-500">Last Modified</dt>
+                  <dd class="text-sm text-gray-900">
+                    <%= (@agent_callback.last_modified || @agent_callback.updated_at).strftime("%B %d, %Y at %I:%M %p") %>
+                  </dd>
+                </div>
+                <% if @agent_callback.last_modified_by.present? %>
+                  <div>
+                    <dt class="text-sm font-medium text-gray-500">Last Modified By</dt>
+                    <dd class="text-sm text-gray-900"><%= @agent_callback.last_modified_by %></dd>
+                  </div>
+                <% end %>
+              </dl>
+            </div>
+          </div>
+        </div>
+
+        <!-- Comments -->
+        <% if @agent_callback.comments.present? %>
+          <div class="mt-8 pt-8 border-t border-gray-200">
+            <h3 class="text-lg font-medium text-gray-900 mb-4">Comments</h3>
+            <div class="bg-gray-50 rounded-lg p-4">
+              <p class="text-sm text-gray-700 whitespace-pre-wrap"><%= @agent_callback.comments %></p>
+            </div>
+          </div>
+        <% end %>
+
+        <!-- Actions -->
+        <div class="mt-8 pt-8 border-t border-gray-200 flex justify-between">
+          <div class="flex space-x-3">
+            <%= link_to edit_agent_callback_path(@agent_callback), class: "bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium" do %>
+              Edit Callback
+            <% end %>
+            <%= link_to agent_callbacks_path, class: "bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-md text-sm font-medium" do %>
+              Back to List
+            <% end %>
+          </div>
+          <div>
+            <%= link_to @agent_callback, method: :delete, 
+                confirm: "Are you sure you want to delete this callback?", 
+                class: "bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm font-medium" do %>
+              Delete Callback
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

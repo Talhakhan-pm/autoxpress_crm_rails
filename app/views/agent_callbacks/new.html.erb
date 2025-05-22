@@ -1,0 +1,125 @@
+<div class="min-h-screen bg-gray-50">
+  <!-- Header -->
+  <div class="bg-white shadow">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center py-6">
+        <div>
+          <h1 class="text-3xl font-bold text-gray-900">New Callback</h1>
+          <p class="mt-1 text-sm text-gray-600">Create a new customer callback</p>
+        </div>
+        <div>
+          <%= link_to agent_callbacks_path, class: "bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-md text-sm font-medium" do %>
+            Back to Callbacks
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="bg-white shadow rounded-lg">
+      <div class="px-6 py-4 border-b border-gray-200">
+        <h2 class="text-lg font-medium text-gray-900">Callback Details</h2>
+      </div>
+      
+      <div class="p-6">
+        <%= form_with model: @agent_callback, local: true, class: "space-y-6" do |form| %>
+          <% if @agent_callback.errors.any? %>
+            <div class="bg-red-50 border border-red-200 rounded-md p-4">
+              <div class="flex">
+                <div class="ml-3">
+                  <h3 class="text-sm font-medium text-red-800">
+                    <%= pluralize(@agent_callback.errors.count, "error") %> prohibited this callback from being saved:
+                  </h3>
+                  <div class="mt-2 text-sm text-red-700">
+                    <ul class="list-disc pl-5 space-y-1">
+                      <% @agent_callback.errors.full_messages.each do |message| %>
+                        <li><%= message %></li>
+                      <% end %>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          <% end %>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Customer Information -->
+            <div class="space-y-4">
+              <h3 class="text-lg font-medium text-gray-900">Customer Information</h3>
+              
+              <div>
+                <%= form.label :customer_name, class: "block text-sm font-medium text-gray-700" %>
+                <%= form.text_field :customer_name, class: "mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" %>
+              </div>
+
+              <div>
+                <%= form.label :callback_number, class: "block text-sm font-medium text-gray-700" %>
+                <%= form.text_field :callback_number, class: "mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" %>
+              </div>
+
+              <div>
+                <%= form.label :zip, "ZIP Code", class: "block text-sm font-medium text-gray-700" %>
+                <%= form.text_field :zip, class: "mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" %>
+              </div>
+            </div>
+
+            <!-- Product & Vehicle Information -->
+            <div class="space-y-4">
+              <h3 class="text-lg font-medium text-gray-900">Product & Vehicle</h3>
+              
+              <div>
+                <%= form.label :product, class: "block text-sm font-medium text-gray-700" %>
+                <%= form.text_field :product, class: "mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" %>
+              </div>
+
+              <div>
+                <%= form.label :car_make_model, "Car Make & Model", class: "block text-sm font-medium text-gray-700" %>
+                <%= form.text_field :car_make_model, class: "mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" %>
+              </div>
+
+              <div>
+                <%= form.label :year, class: "block text-sm font-medium text-gray-700" %>
+                <%= form.number_field :year, min: 1900, max: Date.current.year + 1, class: "mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" %>
+              </div>
+            </div>
+          </div>
+
+          <!-- Status and Follow-up -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <%= form.label :status, class: "block text-sm font-medium text-gray-700" %>
+              <%= form.select :status, 
+                  options_for_select([
+                    ['Pending', 'pending'],
+                    ['In Progress', 'in_progress'],
+                    ['Completed', 'completed'],
+                    ['Cancelled', 'cancelled']
+                  ], @agent_callback.status),
+                  { prompt: 'Select status' },
+                  { class: "mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" } %>
+            </div>
+
+            <div>
+              <%= form.label :follow_up_date, class: "block text-sm font-medium text-gray-700" %>
+              <%= form.date_field :follow_up_date, class: "mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" %>
+            </div>
+          </div>
+
+          <!-- Comments -->
+          <div>
+            <%= form.label :comments, class: "block text-sm font-medium text-gray-700" %>
+            <%= form.text_area :comments, rows: 4, class: "mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" %>
+          </div>
+
+          <!-- Actions -->
+          <div class="flex justify-end space-x-3">
+            <%= link_to "Cancel", agent_callbacks_path, class: "bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" %>
+            <%= form.submit "Create Callback", class: "bg-blue-600 py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
