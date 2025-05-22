@@ -14,8 +14,14 @@ A comprehensive Customer Relationship Management system for automotive parts bus
 - Supplier management
 - Fulfillment
 
-### Callbacks
-- Customer follow-up system
+### Agent Callbacks with Activity Tracking
+- Customer follow-up system with comprehensive activity tracking
+- View tracking: Who viewed callbacks and when
+- Update tracking: All changes with detailed change logs
+- Status change tracking: Conversion funnel analysis
+- Follow-up scheduling tracking: Planned vs completed follow-ups
+- Conversion analytics dashboard with real-time metrics
+- Individual callback activity timelines
 
 ### Agent Management
 - Performance tracking
@@ -245,6 +251,52 @@ See the AgentCallback model implementation for a complete working example:
 - Model: `app/models/agent_callback.rb` (broadcast methods)
 - JavaScript: `app/javascript/channels/realtime_channel.js` (handlers)
 - Views: `app/views/agent_callbacks/index.html.erb` (data attributes)
+
+## 🔴 IMPORTANT: Real-Time Implementation Priority
+
+**⚠️ CRITICAL FOR CLAUDE DEVELOPERS:**
+
+This CRM AutoXpress application is designed to be a **REAL-TIME SYSTEM**. When implementing any new features or modifications:
+
+### 🎯 **ALWAYS Implement Real-Time Features**
+- **ALL new models should include real-time broadcasts**
+- **ALL UI updates should happen instantly across all connected users**  
+- **ALL data changes should trigger immediate notifications**
+- **ALL analytics should update in real-time**
+
+### 🚨 **Real-Time Implementation Checklist**
+For every new feature, ensure:
+- [ ] Model has `after_create_commit`, `after_update_commit`, `after_destroy_commit` callbacks
+- [ ] ActionCable broadcasts are implemented using the room-based pattern
+- [ ] JavaScript handlers are added to `realtime_channel.js`
+- [ ] UI elements have proper `data-*-id` attributes for targeting
+- [ ] Notifications show for create/update/delete actions
+- [ ] Analytics dashboards update automatically
+
+### 🔧 **Why Real-Time is Critical**
+This automotive parts CRM requires instant updates because:
+- Multiple agents work on the same callbacks simultaneously
+- Customer inquiries need immediate attention
+- Inventory changes affect multiple users instantly
+- Activity tracking must be live for accurate conversion analytics
+- Agent performance metrics need real-time visibility
+
+### 📋 **Current Real-Time Features**
+- ✅ Agent Callbacks (create, update, delete, activity tracking)
+- ✅ Activity Timeline (views, updates, status changes)
+- ✅ Conversion Analytics Dashboard
+- ✅ Real-time notifications system
+
+### 🎯 **Future Development Guidelines**
+When adding new features like:
+- Orders, Inventory, Suppliers, Returns, etc.
+- **MUST follow the real-time patterns established in AgentCallback**
+- **MUST include activity tracking where applicable**
+- **MUST update analytics dashboards in real-time**
+
+**Remember: If it's not real-time, it's not complete in this application!**
+
+---
 
 ## Development
 

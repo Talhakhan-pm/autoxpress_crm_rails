@@ -115,39 +115,113 @@ consumer.subscriptions.create("RealtimeChannel", {
   createCallbackRow(callback) {
     const statusClass = this.getStatusClass(callback.status)
     const followUpDate = callback.follow_up_date ? 
-      new Date(callback.follow_up_date).toLocaleDateString() : 'Not set'
+      new Date(callback.follow_up_date).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short', 
+        day: 'numeric'
+      }) : 'Not scheduled'
+    
+    const timeAgo = callback.follow_up_date ? 
+      this.getTimeAgoText(callback.follow_up_date) : ''
     
     return `
-      <tr class="hover:bg-gray-50" data-callback-id="${callback.id}">
-        <td class="px-6 py-4 whitespace-nowrap">
-          <div>
-            <div class="text-sm font-medium text-gray-900">${callback.customer_name}</div>
-            <div class="text-sm text-gray-500">${callback.callback_number}</div>
-            <div class="text-sm text-gray-500">ZIP: ${callback.zip || ''}</div>
+      <tr class="hover:bg-gray-50 transition-colors duration-200 group" data-callback-id="${callback.id}">
+        <!-- Customer Details -->
+        <td class="px-6 py-4">
+          <div class="flex items-center space-x-3">
+            <div class="bg-gray-100 p-2 rounded-full group-hover:bg-gray-200 transition-colors duration-200">
+              <svg class="w-4 h-4 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+              </svg>
+            </div>
+            <div>
+              <div class="text-sm font-semibold text-gray-900">${callback.customer_name}</div>
+              <div class="text-sm text-blue-600 font-medium">
+                <a href="tel:${callback.callback_number}" class="hover:text-blue-800 transition-colors duration-200">
+                  📞 ${callback.callback_number}
+                </a>
+              </div>
+              <div class="text-xs text-gray-500">
+                <span class="inline-flex items-center">
+                  <svg class="w-3 h-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                  </svg>
+                  ${callback.zip || 'No ZIP'}
+                </span>
+              </div>
+            </div>
           </div>
         </td>
-        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-          ${callback.product || ''}
+
+        <!-- Product Interest -->
+        <td class="px-6 py-4">
+          <div class="text-sm font-medium text-gray-900">${callback.product || 'General Inquiry'}</div>
+          <div class="text-xs text-gray-500 mt-1">Product inquiry</div>
         </td>
-        <td class="px-6 py-4 whitespace-nowrap">
-          <div class="text-sm text-gray-900">${callback.car_make_model || ''}</div>
-          <div class="text-sm text-gray-500">Year: ${callback.year || ''}</div>
+
+        <!-- Vehicle Info -->
+        <td class="px-6 py-4">
+          <div class="text-sm font-medium text-gray-900">${callback.car_make_model || 'Not specified'}</div>
+          <div class="text-xs text-gray-500">
+            <span class="inline-flex items-center">
+              <svg class="w-3 h-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+              </svg>
+              ${callback.year || 'Year N/A'}
+            </span>
+          </div>
         </td>
-        <td class="px-6 py-4 whitespace-nowrap">
-          <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full ${statusClass}">
-            ${callback.status ? callback.status.charAt(0).toUpperCase() + callback.status.slice(1).replace('_', ' ') : ''}
+
+        <!-- Status -->
+        <td class="px-6 py-4">
+          <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold ${statusClass}">
+            <span class="w-1.5 h-1.5 rounded-full mr-2 ${this.getStatusDotClass(callback.status)}"></span>
+            ${callback.status ? callback.status.charAt(0).toUpperCase() + callback.status.slice(1).replace('_', ' ') : 'Pending'}
           </span>
         </td>
-        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-          ${followUpDate}
+
+        <!-- Follow-up Date -->
+        <td class="px-6 py-4">
+          <div class="text-sm text-gray-900">${followUpDate}</div>
+          ${timeAgo ? `<div class="text-xs text-gray-500">${timeAgo}</div>` : ''}
         </td>
-        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-          ${callback.agent_name || ''}
+
+        <!-- Agent -->
+        <td class="px-6 py-4">
+          <div class="flex items-center space-x-2">
+            <div class="w-6 h-6 bg-gray-600 rounded-full flex items-center justify-center">
+              <span class="text-white text-xs font-bold">
+                ${callback.agent_name ? callback.agent_name.charAt(0).toUpperCase() : 'A'}
+              </span>
+            </div>
+            <div class="text-sm text-gray-900">${callback.agent_name ? callback.agent_name.split('@')[0] : 'Unassigned'}</div>
+          </div>
         </td>
-        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
-          <a href="/agent_callbacks/${callback.id}" class="text-blue-600 hover:text-blue-900">View</a>
-          <a href="/agent_callbacks/${callback.id}/edit" class="text-indigo-600 hover:text-indigo-900">Edit</a>
-          <a href="/agent_callbacks/${callback.id}" data-method="delete" data-confirm="Are you sure?" class="text-red-600 hover:text-red-900">Delete</a>
+
+        <!-- Actions -->
+        <td class="px-6 py-4">
+          <div class="flex items-center space-x-3">
+            <a href="/agent_callbacks/${callback.id}" class="text-blue-600 hover:text-blue-800 font-medium text-sm transition-colors duration-200">
+              <svg class="w-4 h-4 inline mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+              </svg>
+              View
+            </a>
+            <a href="/agent_callbacks/${callback.id}/edit" class="text-indigo-600 hover:text-indigo-800 font-medium text-sm transition-colors duration-200">
+              <svg class="w-4 h-4 inline mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+              </svg>
+              Edit
+            </a>
+            <a href="/agent_callbacks/${callback.id}" data-method="delete" data-confirm="Are you sure you want to delete this callback?" class="text-gray-500 hover:text-red-600 font-medium text-sm transition-colors duration-200">
+              <svg class="w-4 h-4 inline mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+              </svg>
+              Delete
+            </a>
+          </div>
         </td>
       </tr>
     `
@@ -165,6 +239,41 @@ consumer.subscriptions.create("RealtimeChannel", {
         return 'bg-red-100 text-red-800'
       default:
         return 'bg-gray-100 text-gray-800'
+    }
+  },
+
+  getStatusDotClass(status) {
+    switch(status) {
+      case 'pending':
+        return 'bg-yellow-500'
+      case 'completed':
+        return 'bg-green-500'
+      case 'in_progress':
+        return 'bg-blue-500'
+      case 'cancelled':
+        return 'bg-red-500'
+      default:
+        return 'bg-gray-500'
+    }
+  },
+
+  getTimeAgoText(dateString) {
+    const now = new Date()
+    const date = new Date(dateString)
+    const diffMs = now - date
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))
+    
+    if (diffDays < 0) {
+      const futureDays = Math.abs(diffDays)
+      return futureDays === 0 ? 'Today' : 
+             futureDays === 1 ? 'Tomorrow' : 
+             `In ${futureDays} days`
+    } else if (diffDays === 0) {
+      return 'Today'
+    } else if (diffDays === 1) {
+      return 'Yesterday'
+    } else {
+      return `${diffDays} days ago`
     }
   },
 

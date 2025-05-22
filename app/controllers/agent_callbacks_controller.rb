@@ -4,9 +4,43 @@ class AgentCallbacksController < ApplicationController
 
   def index
     @agent_callbacks = AgentCallback.all.order(created_at: :desc)
+    
+    # Analytics for conversion tracking
+    @analytics = {
+      total_callbacks: AgentCallback.count,
+      status_breakdown: AgentCallback.group(:status).count,
+      recent_activity: AgentCallbackActivity.where(occurred_at: 24.hours.ago..Time.current)
+                                          .group(:activity_type).count,
+      top_agents: AgentCallbackActivity.joins(:user)
+                                      .where(occurred_at: 7.days.ago..Time.current)
+                                      .group('users.email')
+                                      .count
+                                      .sort_by { |_, count| -count }
+                                      .first(5),
+      conversion_metrics: {
+        total_created: AgentCallback.where(created_at: 30.days.ago..Time.current).count,
+        completed: AgentCallback.where(status: 'completed', created_at: 30.days.ago..Time.current).count,
+        in_progress: AgentCallback.where(status: 'in_progress').count,
+        avg_views_per_callback: AgentCallbackActivity.where(activity_type: 'viewed')
+                                                   .group(:agent_callback_id)
+                                                   .count
+                                                   .values
+                                                   .sum.to_f / [AgentCallback.count, 1].max
+      }
+    }
+    
+    @analytics[:conversion_metrics][:conversion_rate] = 
+      (@analytics[:conversion_metrics][:completed].to_f / 
+       [@analytics[:conversion_metrics][:total_created], 1].max * 100).round(1)
   end
 
   def show
+    # Track view activity
+    @agent_callback.track_activity(current_user, 'viewed', nil, request)
+    
+    # Load activity timeline for display
+    @recent_activities = @agent_callback.recent_activities(20)
+    @activity_summary = @agent_callback.activity_summary
   end
 
   def new
@@ -18,6 +52,13 @@ class AgentCallbacksController < ApplicationController
     @agent_callback.agent_name = current_user.email
 
     if @agent_callback.save
+      # Track creation activity
+      @agent_callback.track_activity(current_user, 'created', {
+        customer: @agent_callback.customer_name,
+        product: @agent_callback.product,
+        status: @agent_callback.status
+      }, request)
+      
       redirect_to @agent_callback, notice: 'Agent callback was successfully created.'
     else
       render :new
@@ -28,7 +69,35 @@ class AgentCallbacksController < ApplicationController
   end
 
   def update
+    # Capture changes before update
+    original_status = @agent_callback.status
+    
     if @agent_callback.update(agent_callback_params)
+      # Track update activity
+      changes = @agent_callback.previous_changes.except('updated_at', 'last_modified', 'last_modified_by')
+      
+      @agent_callback.track_activity(current_user, 'updated', {
+        changes: changes,
+        customer: @agent_callback.customer_name
+      }, request)
+      
+      # Track status change separately if status changed
+      if changes.key?('status')
+        @agent_callback.track_activity(current_user, 'status_changed', {
+          from: original_status,
+          to: @agent_callback.status,
+          customer: @agent_callback.customer_name
+        }, request)
+      end
+      
+      # Track follow-up scheduling if follow_up_date changed
+      if changes.key?('follow_up_date') && @agent_callback.follow_up_date.present?
+        @agent_callback.track_activity(current_user, 'follow_up_scheduled', {
+          date: @agent_callback.follow_up_date,
+          customer: @agent_callback.customer_name
+        }, request)
+      end
+      
       redirect_to @agent_callback, notice: 'Agent callback was successfully updated.'
     else
       render :edit

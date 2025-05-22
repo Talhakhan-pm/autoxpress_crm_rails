@@ -10,7 +10,21 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_05_22_173610) do
+ActiveRecord::Schema[7.1].define(version: 2025_05_22_191430) do
+  create_table "agent_callback_activities", force: :cascade do |t|
+    t.integer "agent_callback_id", null: false
+    t.integer "user_id", null: false
+    t.string "activity_type"
+    t.text "details"
+    t.string "ip_address"
+    t.string "user_agent"
+    t.datetime "occurred_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["agent_callback_id"], name: "index_agent_callback_activities_on_agent_callback_id"
+    t.index ["user_id"], name: "index_agent_callback_activities_on_user_id"
+  end
+
   create_table "agent_callbacks", force: :cascade do |t|
     t.string "status"
     t.string "product"
@@ -68,6 +82,8 @@ ActiveRecord::Schema[7.1].define(version: 2025_05_22_173610) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
+  add_foreign_key "agent_callback_activities", "agent_callbacks"
+  add_foreign_key "agent_callback_activities", "users"
   add_foreign_key "callbacks", "users"
   add_foreign_key "callbacks", "users", column: "last_modified_by_id"
 end

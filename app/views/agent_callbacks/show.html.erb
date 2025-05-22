@@ -137,6 +137,114 @@
           </div>
         <% end %>
 
+        <!-- Activity Summary -->
+        <div class="mt-8 pt-8 border-t border-gray-200">
+          <h3 class="text-lg font-medium text-gray-900 mb-4">Activity Summary</h3>
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+            <div class="bg-blue-50 p-4 rounded-lg text-center">
+              <div class="text-2xl font-bold text-blue-600"><%= @activity_summary[:views] %></div>
+              <div class="text-sm text-blue-800">Views</div>
+            </div>
+            <div class="bg-green-50 p-4 rounded-lg text-center">
+              <div class="text-2xl font-bold text-green-600"><%= @activity_summary[:updates] %></div>
+              <div class="text-sm text-green-800">Updates</div>
+            </div>
+            <div class="bg-yellow-50 p-4 rounded-lg text-center">
+              <div class="text-2xl font-bold text-yellow-600"><%= @activity_summary[:status_changes] %></div>
+              <div class="text-sm text-yellow-800">Status Changes</div>
+            </div>
+            <div class="bg-purple-50 p-4 rounded-lg text-center">
+              <div class="text-2xl font-bold text-purple-600"><%= @activity_summary[:follow_ups] %></div>
+              <div class="text-sm text-purple-800">Follow-ups</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Activity Timeline -->
+        <div class="mt-8 pt-8 border-t border-gray-200">
+          <h3 class="text-lg font-medium text-gray-900 mb-4">Activity Timeline</h3>
+          <div class="flow-root">
+            <ul class="max-h-64 overflow-y-auto space-y-3">
+              <% @recent_activities.each_with_index do |activity, index| %>
+                <li class="relative">
+                  <div class="flex items-start space-x-3">
+                    <!-- Activity Icon -->
+                    <div class="flex-shrink-0">
+                      <div class="w-8 h-8 rounded-full flex items-center justify-center
+                        <%= case activity.activity_type
+                            when 'viewed' then 'bg-blue-100'
+                            when 'created' then 'bg-green-100'
+                            when 'updated' then 'bg-yellow-100'
+                            when 'status_changed' then 'bg-purple-100'
+                            when 'follow_up_scheduled' then 'bg-indigo-100'
+                            else 'bg-gray-100'
+                            end %>">
+                        <%= case activity.activity_type
+                            when 'viewed'
+                              content_tag(:svg, content_tag(:path, '', 'stroke-linecap': 'round', 'stroke-linejoin': 'round', 'stroke-width': '2', d: 'M15 12a3 3 0 11-6 0 3 3 0 016 0z M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z'), class: 'w-4 h-4 text-blue-600', fill: 'none', viewBox: '0 0 24 24', stroke: 'currentColor')
+                            when 'created'
+                              content_tag(:svg, content_tag(:path, '', 'stroke-linecap': 'round', 'stroke-linejoin': 'round', 'stroke-width': '2', d: 'M12 6v6m0 0v6m0-6h6m-6 0H6'), class: 'w-4 h-4 text-green-600', fill: 'none', viewBox: '0 0 24 24', stroke: 'currentColor')
+                            when 'updated'
+                              content_tag(:svg, content_tag(:path, '', 'stroke-linecap': 'round', 'stroke-linejoin': 'round', 'stroke-width': '2', d: 'M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z'), class: 'w-4 h-4 text-yellow-600', fill: 'none', viewBox: '0 0 24 24', stroke: 'currentColor')
+                            when 'status_changed'
+                              content_tag(:svg, content_tag(:path, '', 'stroke-linecap': 'round', 'stroke-linejoin': 'round', 'stroke-width': '2', d: 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z'), class: 'w-4 h-4 text-purple-600', fill: 'none', viewBox: '0 0 24 24', stroke: 'currentColor')
+                            when 'follow_up_scheduled'
+                              content_tag(:svg, content_tag(:path, '', 'stroke-linecap': 'round', 'stroke-linejoin': 'round', 'stroke-width': '2', d: 'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z'), class: 'w-4 h-4 text-indigo-600', fill: 'none', viewBox: '0 0 24 24', stroke: 'currentColor')
+                            else
+                              content_tag(:svg, content_tag(:path, '', 'stroke-linecap': 'round', 'stroke-linejoin': 'round', 'stroke-width': '2', d: 'M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z'), class: 'w-4 h-4 text-gray-600', fill: 'none', viewBox: '0 0 24 24', stroke: 'currentColor')
+                            end %>
+                      </div>
+                    </div>
+                    
+                    <!-- Activity Content -->
+                    <div class="flex-1 min-w-0">
+                      <div class="text-sm font-medium text-gray-900">
+                        <%= activity.user.email.split('@').first.humanize %> 
+                        <%= case activity.activity_type
+                            when 'viewed' then 'viewed this callback'
+                            when 'created' then 'created this callback'
+                            when 'updated' then 'updated this callback'
+                            when 'status_changed'
+                              details = activity.formatted_details
+                              if details.is_a?(Hash) && details['from'] && details['to']
+                                "changed status from #{details['from'].humanize} to #{details['to'].humanize}"
+                              else
+                                'changed the status'
+                              end
+                            when 'follow_up_scheduled'
+                              details = activity.formatted_details
+                              if details.is_a?(Hash) && details['date']
+                                "scheduled follow-up for #{Date.parse(details['date']).strftime('%B %d, %Y')}"
+                              else
+                                'scheduled a follow-up'
+                              end
+                            else
+                              activity.activity_type.humanize.downcase
+                            end %>
+                      </div>
+                      <div class="text-xs text-gray-500 flex items-center space-x-2">
+                        <span><%= time_ago_in_words(activity.occurred_at) %> ago</span>
+                        <span>•</span>
+                        <span><%= activity.occurred_at.strftime('%I:%M %p') %></span>
+                        <% if activity.ip_address.present? %>
+                          <span>•</span>
+                          <span><%= activity.ip_address %></span>
+                        <% end %>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+              <% end %>
+              
+              <% if @recent_activities.empty? %>
+                <li class="text-center py-4">
+                  <div class="text-sm text-gray-500">No activity recorded yet</div>
+                </li>
+              <% end %>
+            </ul>
+          </div>
+        </div>
+
         <!-- Actions -->
         <div class="mt-8 pt-8 border-t border-gray-200 flex justify-between">
           <div class="flex space-x-3">
