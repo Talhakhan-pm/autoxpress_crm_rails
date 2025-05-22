@@ -59,7 +59,7 @@ class AgentCallbacksController < ApplicationController
         status: @agent_callback.status
       }, request)
       
-      redirect_to @agent_callback, notice: 'Agent callback was successfully created.'
+      redirect_to agent_callbacks_path, notice: 'Agent callback was successfully created.'
     else
       render :new
     end
@@ -98,7 +98,7 @@ class AgentCallbacksController < ApplicationController
         }, request)
       end
       
-      redirect_to @agent_callback, notice: 'Agent callback was successfully updated.'
+      redirect_to agent_callbacks_path, notice: 'Agent callback was successfully updated.'
     else
       render :edit
     end

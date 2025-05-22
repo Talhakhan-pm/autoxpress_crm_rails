@@ -203,7 +203,45 @@
                         <%= case activity.activity_type
                             when 'viewed' then 'viewed this callback'
                             when 'created' then 'created this callback'
-                            when 'updated' then 'updated this callback'
+                            when 'updated'
+                              details = activity.formatted_details
+                              if details.is_a?(Hash) && details['changes']
+                                changes = details['changes']
+                                change_descriptions = []
+                                changes.each do |field, values|
+                                  case field
+                                  when 'customer_name'
+                                    change_descriptions << "changed customer name from \"#{values[0]}\" to \"#{values[1]}\""
+                                  when 'callback_number'
+                                    change_descriptions << "changed phone number from \"#{values[0]}\" to \"#{values[1]}\""
+                                  when 'product'
+                                    change_descriptions << "changed product from \"#{values[0] || 'none'}\" to \"#{values[1] || 'none'}\""
+                                  when 'car_make_model'
+                                    change_descriptions << "changed car make/model from \"#{values[0] || 'none'}\" to \"#{values[1] || 'none'}\""
+                                  when 'year'
+                                    change_descriptions << "changed year from \"#{values[0] || 'none'}\" to \"#{values[1] || 'none'}\""
+                                  when 'zip'
+                                    change_descriptions << "changed ZIP code from \"#{values[0] || 'none'}\" to \"#{values[1] || 'none'}\""
+                                  when 'follow_up_date'
+                                    old_date = values[0] ? Date.parse(values[0]).strftime('%B %d, %Y') : 'none'
+                                    new_date = values[1] ? Date.parse(values[1]).strftime('%B %d, %Y') : 'none'
+                                    change_descriptions << "changed follow-up date from #{old_date} to #{new_date}"
+                                  when 'comments'
+                                    if values[0].blank?
+                                      change_descriptions << "added comments"
+                                    elsif values[1].blank?
+                                      change_descriptions << "removed comments"
+                                    else
+                                      change_descriptions << "updated comments"
+                                    end
+                                  else
+                                    change_descriptions << "changed #{field.humanize.downcase} from \"#{values[0]}\" to \"#{values[1]}\""
+                                  end
+                                end
+                                "updated this callback: #{change_descriptions.join(', ')}"
+                              else
+                                'updated this callback'
+                              end
                             when 'status_changed'
                               details = activity.formatted_details
                               if details.is_a?(Hash) && details['from'] && details['to']
