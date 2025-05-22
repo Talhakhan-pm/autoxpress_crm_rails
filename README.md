@@ -1,24 +1,62 @@
-# README
+# CRM AutoXpress
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+A comprehensive Customer Relationship Management system for automotive parts businesses, built with Rails, esbuild, and Tailwind CSS.
 
-Things you may want to cover:
+## Core Features
 
-* Ruby version
+### Order Management
+- Customer orders
+- Order processing
+- Status tracking
 
-* System dependencies
+### Dispatching/Order Processing
+- Payment processing
+- Supplier management
+- Fulfillment
 
-* Configuration
+### Callbacks
+- Customer follow-up system
 
-* Database creation
+### Agent Management
+- Performance tracking
+- Role-based access
 
-* Database initialization
+### Product Catalog
+- Automotive parts inventory
 
-* How to run the test suite
+### Refunds/Returns
+- Return processing workflow
 
-* Services (job queues, cache servers, search engines, etc.)
+### Supplier Management
+- Vendor relationships
+- Pricing management
 
-* Deployment instructions
+### Dashboard/Analytics
+- Real-time metrics
+- Reporting
 
-* ...
+## Real-Time Features
+
+- Live order status updates
+- Real-time agent performance metrics
+- Instant callback notifications
+- Live inventory updates
+- Real-time dashboard charts
+
+## Development
+
+### Ruby version
+
+### System dependencies
+
+### Configuration
+
+### Database creation
+
+### Database initialization
+
+### How to run the test suite
+
+### Services (job queues, cache servers, search engines, etc.)
+
+### Deployment instructions
