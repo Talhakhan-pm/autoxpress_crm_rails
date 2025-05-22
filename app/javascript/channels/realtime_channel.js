@@ -129,11 +129,6 @@ consumer.subscriptions.create("RealtimeChannel", {
         <!-- Customer Details -->
         <td class="px-6 py-4">
           <div class="flex items-center space-x-3">
-            <div class="bg-gray-100 p-2 rounded-full group-hover:bg-gray-200 transition-colors duration-200">
-              <svg class="w-4 h-4 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-              </svg>
-            </div>
             <div>
               <div class="text-sm font-semibold text-gray-900">${callback.customer_name}</div>
               <div class="text-sm text-blue-600 font-medium">
